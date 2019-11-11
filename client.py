@@ -9,7 +9,7 @@ from time import sleep
 
 from requests import Session
 
-DEFAULT_HOSTNAME = 'virtualsquad.ninja'
+DEFAULT_HOSTNAME = 'localhost'
 
 
 def get_arguments():
