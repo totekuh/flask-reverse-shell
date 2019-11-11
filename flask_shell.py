@@ -42,13 +42,15 @@ def unauthorized():
 
 def forbidden():
     response = jsonify({
-        'message': 'What are you doing, are you okay?'
+        'message': 'The boss is busy'
     })
     return response, 403
 
 
 @app.route('/init')
 def init_shell():
+    if current_dir and current_user:
+        return forbidden()
     shell_id = write_shell(str(uuid1()), request.remote_addr)
     return jsonify(shell_id)
 
