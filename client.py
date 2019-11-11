@@ -120,6 +120,7 @@ def get_shell_uuid(session,
 def communicate_with_command_center(options):
     hostname = options.hostname
     with Session() as session:
+        session.verify = False
         while True:
             base_url = 'https://{hostname}'.format(hostname=hostname)
             shell_uuid = get_shell_uuid(session, "{base_url}/init".format(base_url=base_url))

