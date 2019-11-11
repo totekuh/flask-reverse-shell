@@ -74,6 +74,8 @@ def listen(shell_id):
                                                               remote_addr=remote_addr,
                                                               pwd=current_dir)
     if method == 'GET':
+        if not current_user and not current_dir:
+            return jsonify(cmd='echo', cwd='.')
         command = ''
         while command == '':
             command = input(prompt_prefix)

