@@ -30,7 +30,7 @@ def write_shell(shell_id, remote_addr):
 @app.route('/')
 @app.route('/index')
 def index():
-    return "Hello, World!"
+    return "Fuck off, nothing to see here"
 
 
 def unauthorized():

