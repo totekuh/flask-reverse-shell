@@ -7,7 +7,7 @@ from time import sleep
 
 from requests import Session
 
-DEFAULT_HOSTNAME = 'localhost'
+DEFAULT_HOSTNAME = 'https://localhost'
 
 
 def get_arguments():
@@ -122,7 +122,7 @@ def communicate_with_command_center(options):
     with Session() as session:
         session.verify = False
         while True:
-            base_url = 'https://{hostname}'.format(hostname=hostname)
+            base_url = '{hostname}'.format(hostname=hostname)
             shell_uuid = get_shell_uuid(session, "{base_url}/init".format(base_url=base_url))
             while True:
                 shell_url = "{base_url}/{shell_uuid}".format(base_url=base_url, shell_uuid=shell_uuid)
