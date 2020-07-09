@@ -183,7 +183,7 @@ def serve_forever():
 if __name__ == "__main__":
     flask_thread = FlaskThread(app, ip=options.ip,
                                port=options.port,
-                               ssl=options.ssl)
+                               ssl=options.https)
     flask_thread.start()
     print('[{now}] Listening for connections...\r'.format(now=strftime("%Y-%m-%d %H:%M:%S", gmtime())), end='',
           flush=True)
